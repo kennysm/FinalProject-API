@@ -15,15 +15,29 @@ router.post("/", withAuth, async (req, res) => {
   }
 });
 
+router.get("/search", withAuth, async function (req, res) {
+  const { query } = req.query;
+
+  try {
+    let notes = await Note.find({ author: req.user._id }).find({
+      $text: { $search: query },
+    });
+
+    res.json(notes);
+  } catch (error) {
+    res.json({ error: error }).status(500);
+  }
+});
+
 router.get("/search", withAuth, async (req, res) => {
   const { query } = req.query;
   try {
-    let notes = await Note.find({ author: req.user._id })
-      .find({ author: req.user._id })
-      .find({ $text: { $search: query } });
+    let notes = await Note.find({ author: req.user._id }).find({
+      $text: { $search: query },
+    });
     res.json(notes);
   } catch (error) {
-    res.status({ error: error }).status(500);
+    res.json({ error: error }).status(500);
   }
 });
 
